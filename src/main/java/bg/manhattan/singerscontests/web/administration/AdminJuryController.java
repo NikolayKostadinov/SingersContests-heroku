@@ -6,7 +6,6 @@ import bg.manhattan.singerscontests.model.enums.UserRoleEnum;
 import bg.manhattan.singerscontests.model.service.JuryMemberServiceModel;
 import bg.manhattan.singerscontests.model.view.JuryDemoteViewModel;
 import bg.manhattan.singerscontests.model.view.UserSelectViewModel;
-import bg.manhattan.singerscontests.services.JuryMemberService;
 import bg.manhattan.singerscontests.services.UserService;
 import bg.manhattan.singerscontests.web.BaseController;
 import org.modelmapper.ModelMapper;
@@ -127,20 +126,17 @@ public class AdminJuryController extends BaseController {
     }
 
     private List<UserSelectViewModel> getPotentialJuryMembers() {
-        List<UserSelectViewModel> potentialJuryMembers =
-                userService.getUserNotInRole(UserRoleEnum.JURY_MEMBER)
-                        .stream()
-                        .map(u -> this.mapper.map(u, UserSelectViewModel.class))
-                        .toList();
-        return potentialJuryMembers;
+        return userService.getUserNotInRole(UserRoleEnum.JURY_MEMBER)
+                .stream()
+                .map(u -> this.mapper.map(u, UserSelectViewModel.class))
+                .toList();
     }
 
     private List<UserSelectViewModel> getJuryMembers() {
-        List<UserSelectViewModel> juryMembers = this.userService.getUsersByRole(UserRoleEnum.JURY_MEMBER)
+        return this.userService.getUsersByRole(UserRoleEnum.JURY_MEMBER)
                 .stream()
                 .map(user -> this.mapper.map(user, UserSelectViewModel.class))
                 .toList();
-        return juryMembers;
     }
 
     @ModelAttribute("juryModel")
