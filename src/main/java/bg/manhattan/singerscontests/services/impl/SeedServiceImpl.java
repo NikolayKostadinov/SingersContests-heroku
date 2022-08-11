@@ -12,13 +12,15 @@ import bg.manhattan.singerscontests.util.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.Resource;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.time.LocalDate;
@@ -72,9 +74,8 @@ public class SeedServiceImpl implements SeedService {
 
         this.seedProps = new Properties();
         try {
-            String regulationPath = resourceLoader.getResource("classpath*:seed.properties")
-                    .getFile().getPath();
-            seedProps.load(new FileInputStream(regulationPath));
+            ClassPathResource classPathResource = new ClassPathResource("seed.properties");
+            seedProps.load(classPathResource.getInputStream());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -166,20 +167,19 @@ public class SeedServiceImpl implements SeedService {
     private void seedContestants(List<Edition> editions) {
         LOGGER.info("-----------------      Seed Contestants   ------------------");
         User user = this.userRepository.findByUsername("user1").orElse(null);
-        Resource resource = resourceLoader.getResource("classpath*:seed_contestants.txt");
+        ClassPathResource classPathResource = new ClassPathResource("seed_contestants.txt");
         editions.forEach(edition -> {
                     List<Contestant> contestants = new ArrayList<>();
                     try {
-                        File file = resource.getFile();
-                        FileReader fr = new FileReader(file);   //reads the file
-                        BufferedReader br = new BufferedReader(fr);  //creates a buffering character input stream
+                        InputStreamReader in = new InputStreamReader(classPathResource.getInputStream());//reads the file
+                        BufferedReader br = new BufferedReader(in);  //creates a buffering character input stream
                         char[] bom = new char[1];
                         int bomBytes = br.read(bom);
                         String line;
                         while ((line = br.readLine()) != null) {
                             contestants.add(parseContestant(line).setRegistrar(user));
                         }
-                        fr.close();    //closes the stream and release the resources
+                        in.close();    //closes the stream and release the resources
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
