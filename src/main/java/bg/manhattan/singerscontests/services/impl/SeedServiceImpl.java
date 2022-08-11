@@ -72,7 +72,7 @@ public class SeedServiceImpl implements SeedService {
 
         this.seedProps = new Properties();
         try {
-            String regulationPath = resourceLoader.getResource("classpath:seed.properties")
+            String regulationPath = resourceLoader.getResource("classpath*:seed.properties")
                     .getFile().getPath();
             seedProps.load(new FileInputStream(regulationPath));
         } catch (IOException e) {
@@ -166,7 +166,7 @@ public class SeedServiceImpl implements SeedService {
     private void seedContestants(List<Edition> editions) {
         LOGGER.info("-----------------      Seed Contestants   ------------------");
         User user = this.userRepository.findByUsername("user1").orElse(null);
-        Resource resource = resourceLoader.getResource("classpath:seed_contestants.txt");
+        Resource resource = resourceLoader.getResource("classpath*:seed_contestants.txt");
         editions.forEach(edition -> {
                     List<Contestant> contestants = new ArrayList<>();
                     try {
