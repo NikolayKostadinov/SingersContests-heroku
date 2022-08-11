@@ -1,12 +1,8 @@
 package bg.manhattan.singerscontests.services.impl;
 
-import bg.manhattan.singerscontests.events.PerformanceIssueEvent;
-import bg.manhattan.singerscontests.events.UserChangeEmailEvent;
-import bg.manhattan.singerscontests.events.UserRegisteredEvent;
 import bg.manhattan.singerscontests.model.view.PerformanceIssueViewModel;
 import bg.manhattan.singerscontests.services.EmailService;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.event.EventListener;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -49,17 +45,17 @@ public class EmailServiceImpl implements EmailService {
         this.adminEmail = adminEmail;
     }
 
-    @EventListener(UserRegisteredEvent.class)
-    public void onUserRegistered(UserRegisteredEvent event) throws MessagingException {
-        this.sendEmail(event.getEmail(), this.registrationSubject, event.getFullName(), event.getLocale(),
-                REGISTRATION_EMAIL_TEMPLATE_NAME);
-    }
-
-    @EventListener(UserChangeEmailEvent.class)
-    public void onUserRegistered(UserChangeEmailEvent event) throws MessagingException {
-        this.sendEmail(event.getEmail(), this.changeEmailSubject, event.getFullName(), event.getLocale(),
-                UPDATE_EMAIL_TEMPLATE_NAME);
-    }
+//    @EventListener(UserRegisteredEvent.class)
+//    public void onUserRegistered(UserRegisteredEvent event) throws MessagingException {
+//        this.sendEmail(event.getEmail(), this.registrationSubject, event.getFullName(), event.getLocale(),
+//                REGISTRATION_EMAIL_TEMPLATE_NAME);
+//    }
+//
+//    @EventListener(UserChangeEmailEvent.class)
+//    public void onUserRegistered(UserChangeEmailEvent event) throws MessagingException {
+//        this.sendEmail(event.getEmail(), this.changeEmailSubject, event.getFullName(), event.getLocale(),
+//                UPDATE_EMAIL_TEMPLATE_NAME);
+//    }
 
     @Override
     public void sendEmail(String email, String subject, String fullName, Locale locale, String templateName) throws MessagingException {
@@ -83,10 +79,10 @@ public class EmailServiceImpl implements EmailService {
         this.mailSender.send(mimeMessage);
     }
 
-    @EventListener(PerformanceIssueEvent.class)
-    public void onPerformanceIssue(PerformanceIssueEvent event) throws MessagingException {
-        this.sendPerformanceIssueEmail(this.adminEmail, event.getSource(), event.getPerformanceProblem());
-    }
+//    @EventListener(PerformanceIssueEvent.class)
+//    public void onPerformanceIssue(PerformanceIssueEvent event) throws MessagingException {
+//        this.sendPerformanceIssueEmail(this.adminEmail, event.getSource(), event.getPerformanceProblem());
+//    }
 
     @Override
     public void sendPerformanceIssueEmail(String email, Object source, PerformanceIssueViewModel issue) throws MessagingException {
