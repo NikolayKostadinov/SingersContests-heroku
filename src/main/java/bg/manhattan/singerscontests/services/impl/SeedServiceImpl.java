@@ -215,14 +215,14 @@ public class SeedServiceImpl implements SeedService {
         List<JuryMember> juryMembers = this.juryMemberRepository.findAll();
         List<Edition> editions = new ArrayList<>();
         contests.forEach(contest -> {
-            for (int i = 0; i < 14; i++) {
+            for (int i = 0; i < 4; i++) {
                 Edition edition = new Edition()
                         .setEditionType(i % 2 == 0 ? EditionType.ATTENDING : EditionType.ONLINE)
                         .setNumber(i + 1)
                         .setBeginDate(today.plusDays(i + 15))
                         .setEndDate(today.plusDays(i + 17))
-                        .setBeginOfSubscriptionDate(today.plusDays(i - 5))
-                        .setEndOfSubscriptionDate(today.plusDays(i - 3))
+                        .setBeginOfSubscriptionDate(today.plusDays(i - 3))
+                        .setEndOfSubscriptionDate(today.plusDays(i - 1))
                         .setAgeCalculationType(
                                 switch (i % 3) {
                                     case 0 -> AgeCalculationType.START_OF_CONTEST;
