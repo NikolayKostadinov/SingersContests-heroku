@@ -12,7 +12,8 @@ import bg.manhattan.singerscontests.util.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -45,6 +46,8 @@ public class SeedServiceImpl implements SeedService {
 
     private final Properties seedProps;
 
+    private final ResourceLoader resourceLoader;
+
     public SeedServiceImpl(UserRepository userRepository,
                            UserRoleRepository userRoleRepository,
                            ContestRepository contestRepository,
@@ -53,7 +56,8 @@ public class SeedServiceImpl implements SeedService {
                            PasswordEncoder passwordEncoder,
                            AgeGroupService ageGroupService,
                            @Value("${app.default.admin.password}") String adminPass,
-                           ContestantRepository contestantRepository) {
+                           ContestantRepository contestantRepository,
+                           ResourceLoader resourceLoader) {
         this.userRepository = userRepository;
         this.userRoleRepository = userRoleRepository;
         this.contestRepository = contestRepository;
@@ -63,10 +67,13 @@ public class SeedServiceImpl implements SeedService {
         this.ageGroupService = ageGroupService;
         this.adminPass = adminPass;
         this.contestantRepository = contestantRepository;
+        this.resourceLoader = resourceLoader;
+
 
         this.seedProps = new Properties();
         try {
-            String regulationPath = new ClassPathResource("seed.properties").getFile().getPath();
+            String regulationPath = resourceLoader.getResource("classpath:seed.properties")
+                    .getFile().getPath();
             seedProps.load(new FileInputStream(regulationPath));
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -159,12 +166,11 @@ public class SeedServiceImpl implements SeedService {
     private void seedContestants(List<Edition> editions) {
         LOGGER.info("-----------------      Seed Contestants   ------------------");
         User user = this.userRepository.findByUsername("user1").orElse(null);
-        ClassPathResource classPathResource = new ClassPathResource("seed_contestants.txt");
-
+        Resource resource = resourceLoader.getResource("classpath:seed_contestants.txt");
         editions.forEach(edition -> {
                     List<Contestant> contestants = new ArrayList<>();
                     try {
-                        File file = classPathResource.getFile();
+                        File file = resource.getFile();
                         FileReader fr = new FileReader(file);   //reads the file
                         BufferedReader br = new BufferedReader(fr);  //creates a buffering character input stream
                         char[] bom = new char[1];
