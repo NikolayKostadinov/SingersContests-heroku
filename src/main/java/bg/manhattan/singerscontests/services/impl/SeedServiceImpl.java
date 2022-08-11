@@ -6,6 +6,7 @@ import bg.manhattan.singerscontests.model.enums.EditionType;
 import bg.manhattan.singerscontests.model.enums.UserRoleEnum;
 import bg.manhattan.singerscontests.repositories.*;
 import bg.manhattan.singerscontests.services.AgeGroupService;
+import bg.manhattan.singerscontests.services.EditionService;
 import bg.manhattan.singerscontests.services.SeedService;
 import bg.manhattan.singerscontests.util.DateTimeProvider;
 import bg.manhattan.singerscontests.util.Utils;
@@ -50,6 +51,8 @@ public class SeedServiceImpl implements SeedService {
 
     private final ResourceLoader resourceLoader;
 
+    private final EditionService editionService;
+
     public SeedServiceImpl(UserRepository userRepository,
                            UserRoleRepository userRoleRepository,
                            ContestRepository contestRepository,
@@ -59,7 +62,7 @@ public class SeedServiceImpl implements SeedService {
                            AgeGroupService ageGroupService,
                            @Value("${app.default.admin.password}") String adminPass,
                            ContestantRepository contestantRepository,
-                           ResourceLoader resourceLoader) {
+                           ResourceLoader resourceLoader, EditionService editionService) {
         this.userRepository = userRepository;
         this.userRoleRepository = userRoleRepository;
         this.contestRepository = contestRepository;
@@ -70,6 +73,7 @@ public class SeedServiceImpl implements SeedService {
         this.adminPass = adminPass;
         this.contestantRepository = contestantRepository;
         this.resourceLoader = resourceLoader;
+        this.editionService = editionService;
 
 
         this.seedProps = new Properties();
@@ -124,6 +128,15 @@ public class SeedServiceImpl implements SeedService {
             List<Contest> contests = seedContests();
             List<Edition> editions = seedEditions(contests);
             seedContestants(editions);
+
+            LOGGER.info("----------------- Generate Scenario orders -----------------");
+            LocalDate today = DateTimeProvider.getCurrent().utcNow().toLocalDate();
+            LocalDate beginOfMonth = LocalDate.of(today.getYear(), today.getMonthValue(), 1);
+            for (int i = 0; i < today.getDayOfMonth(); i++) {
+                this.editionService.generateScenarioOrder(beginOfMonth.plusDays(i));
+            }
+
+            this.seedRatingsForFirstEdition();
         }
         LOGGER.info("----------------- DB Initialized and ready -----------------");
     }
