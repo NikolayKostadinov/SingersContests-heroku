@@ -82,25 +82,6 @@ public class SeedServiceImpl implements SeedService {
         }
     }
 
-    private static BinaryOperator<BigDecimal> getBigDecimalBinaryIncrementOperator() {
-        BinaryOperator<BigDecimal> increment = (s, step) -> {
-            BigDecimal result = s.add(step);
-            if (result.compareTo(BigDecimal.valueOf(10)) > 0) {
-                result = BigDecimal.ONE;
-            }
-            return result;
-        };
-        return increment;
-    }
-
-    private static void changeEditionDate(Edition edition) {
-        LocalDateTime today = DateTimeProvider.getCurrent().utcNow();
-        edition.setBeginOfSubscriptionDate(today.minusDays(3).toLocalDate());
-        edition.setEndOfSubscriptionDate(today.minusDays(2).toLocalDate());
-        edition.setBeginDate(today.minusDays(1).toLocalDate());
-        edition.setEndDate(today.toLocalDate());
-    }
-
     @Override
     @Transactional
     public void seed() {
@@ -234,7 +215,7 @@ public class SeedServiceImpl implements SeedService {
         List<JuryMember> juryMembers = this.juryMemberRepository.findAll();
         List<Edition> editions = new ArrayList<>();
         contests.forEach(contest -> {
-            for (int i = 0; i < 14; i++) {
+            for (int i = 0; i < 4; i++) {
                 Edition edition = new Edition()
                         .setEditionType(i % 2 == 0 ? EditionType.ATTENDING : EditionType.ONLINE)
                         .setNumber(i + 1)
@@ -462,5 +443,24 @@ public class SeedServiceImpl implements SeedService {
         }
 
         userRepository.saveAll(users);
+    }
+
+    private void changeEditionDate(Edition edition) {
+        LocalDateTime today = DateTimeProvider.getCurrent().utcNow();
+        edition.setBeginOfSubscriptionDate(today.minusDays(3).toLocalDate());
+        edition.setEndOfSubscriptionDate(today.minusDays(2).toLocalDate());
+        edition.setBeginDate(today.minusDays(1).toLocalDate());
+        edition.setEndDate(today.toLocalDate());
+    }
+
+    private BinaryOperator<BigDecimal> getBigDecimalBinaryIncrementOperator() {
+        BinaryOperator<BigDecimal> increment = (s, step) -> {
+            BigDecimal result = s.add(step);
+            if (result.compareTo(BigDecimal.valueOf(10)) > 0) {
+                result = BigDecimal.ONE;
+            }
+            return result;
+        };
+        return increment;
     }
 }
