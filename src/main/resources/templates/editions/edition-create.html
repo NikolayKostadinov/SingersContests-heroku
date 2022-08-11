@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{/fragments/header :: head}"></head>
+
+<body>
+
+<div th:replace="~{/fragments/header :: topbar}">Contacts</div>
+
+<header th:replace="~{/fragments/header :: header}">Main Navigation</header>
+
+<main id="main" class="container" data-aos="zoom-in">
+    <h1 class="display-6 text-center" th:text="|Create ${editionModel.contestName}`s Edition |"></h1>
+    <form th:action="@{/editions/{contestId}/create(contestId=${editionModel.contestId})}"
+          th:method="post"
+          th:object="${editionModel}"
+          class="main-form mx-auto col-md-8 d-flex flex-column justify-content-center aos-init aos-animate">
+<!--        <p th:if="${#fields.hasGlobalErrors()}"-->
+<!--           th:each="err : ${#fields.globalErrors()}"-->
+<!--           th:text="${err}" class="text-danger">Error message</p>-->
+        <input type="hidden" th:field="*{id}">
+        <div class="row">
+            <div class="form-row col-md-2">
+                <label for="number" class="form-label">Edition number</label>
+                <input id="number"
+                       th:field="*{number}"
+                       th:errorclass="is-invalid"
+                       type="number" class="form-control"
+                       required>
+                <div class="invalid-feedback" th:errors="*{number}">
+                    Error message.
+                </div>
+            </div>
+
+            <div class="form-row col-md-5">
+                <label for="edition-type" class="form-label">Edition type</label>
+                <select id="edition-type"
+                        th:field="*{editionType}"
+                        th:errorclass="is-invalid"
+                        type="number" class="form-select"
+                        required>
+                    <option value="">-- Choose edition type --</option>
+                    <option th:each="typeOpt : ${T(bg.manhattan.singerscontests.model.enums.EditionType).values()}"
+                            th:value="${typeOpt}"
+                            th:text="${typeOpt.displayName}">Option
+                    </option>
+                </select>
+                <div class="invalid-feedback" th:errors="*{editionType}">
+                    Error message.
+                </div>
+            </div>
+            <div class="form-row col-md-5">
+                <label for="age-calculation-type" class="form-label">Age calculation type</label>
+                <select id="age-calculation-type"
+                        th:field="*{ageCalculationType}"
+                        th:errorclass="is-invalid"
+                        type="number" class="form-select"
+                        required>
+                    <option value="">-- Choose age calculation type --</option>
+                    <option th:each="ageTypeOpt : ${T(bg.manhattan.singerscontests.model.enums.AgeCalculationType).values()}"
+                            th:value="${ageTypeOpt}"
+                            th:text="${ageTypeOpt.displayName}">Option
+                    </option>
+                </select>
+                <div class="invalid-feedback" th:errors="*{editionType}">
+                    Error message.
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <fieldset class="col-md-6">
+                <legend>Edition duration</legend>
+                <div class="row">
+                    <div class="form-row col-md-6">
+                        <label for="begin-date" class="form-label">Start of edition</label>
+                        <input id="begin-date"
+                               th:field="*{beginDate}"
+                               th:errorclass="is-invalid"
+                               type="date" class="form-control"
+                               required>
+                        <div class="invalid-feedback" th:errors="*{beginDate}">
+                            Error message.
+                        </div>
+                    </div>
+                    <div class="form-row col-md-6">
+                        <label for="end-date" class="form-label">End of edition</label>
+                        <input id="end-date"
+                               th:field="*{endDate}"
+                               th:errorclass="is-invalid"
+                               type="date" class="form-control"
+                               required>
+                        <div class="invalid-feedback" th:errors="*{endDate}">
+                            Error message.
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
+
+            <fieldset class="col-md-6">
+                <legend>Contestants subscription period</legend>
+                <div class="row">
+                    <div class="form-row col-md-6">
+                        <label for="sub-begin-date" class="form-label">Begin of subscription</label>
+                        <input id="sub-begin-date"
+                               th:field="*{beginOfSubscriptionDate}"
+                               th:errorclass="is-invalid"
+                               type="date" class="form-control"
+                               required>
+                        <div class="invalid-feedback" th:errors="*{beginOfSubscriptionDate}">
+                            Error message.
+                        </div>
+                    </div>
+                    <div class="form-row col-md-6">
+                        <label for="sub-end-date" class="form-label">End of subscription</label>
+                        <input id="sub-end-date"
+                               th:field="*{endOfSubscriptionDate}"
+                               th:errorclass="is-invalid"
+                               type="date" class="form-control"
+                               required>
+                        <div class="invalid-feedback" th:errors="*{endOfSubscriptionDate}">
+                            Error message.
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
+            <div class="form-row">
+                <label for="regulations" class="form-label">Regulations</label>
+                <textarea id="regulations"
+                          th:field="*{regulations}"
+                          th:errorclass="is-invalid"
+                          class="form-control"
+                          rows="5"
+                          required></textarea>
+                <div class="invalid-feedback" th:errors="*{regulations}">
+                    Error message.
+                </div>
+            </div>
+        </div>
+
+        <!-- ======= Performance categories ======= -->
+        <div id="categories">
+            <div class="row">
+                <div class="col-11">
+                    <label class="form-label ">Performance categories</label>
+                </div>
+                <div class="col-1">
+                    <button id="add-category" class="btn btn-sm btn-success" name="btn-add">Add</button>
+                </div>
+                <hr>
+            </div>
+            <div class="row align-middle" th:name="category-row"
+                 th:each="category, itemStat : *{performanceCategories}"
+                 th:data-index="${itemStat.index}">
+                    <input type="hidden" th:field="*{performanceCategories[__${itemStat.index}__].id}">
+                <div class="col-9">
+                    <div class="form-row">
+                        <input id="category-name"
+                               th:field="*{performanceCategories[__${itemStat.index}__].name}"
+                               th:errorclass="is-invalid"
+                               type="text" class="form-control"
+                               placeholder="Category Name"
+                        >
+                        <div class="invalid-feedback"
+                             th:errors="*{performanceCategories[__${itemStat.index}__].name}">
+                            Error message.
+                        </div>
+                    </div>
+                </div>
+                <div class="col-2">
+                    <div class="form-check">
+                        <input class="form-check-input"
+                               th:field="*{performanceCategories[__${itemStat.index}__].required}"
+                               th:errorclass="is-invalid"
+                               type="checkbox" >
+                        <label class="form-check-label">
+                            Required
+                        </label>
+                    </div>
+                </div>
+                <input type="hidden" th:field="*{performanceCategories[__${itemStat.index}__].deleted}">
+                <div class="col-1">
+                    <a href="#" th:id="|categories${itemStat.index}|"
+                       type="button" class="btn-close" name="remove-category"
+                       th:data-id="${itemStat.index}"></a>
+                </div>
+            </div>
+        </div> <!-- ======= Performance categories ======= -->
+
+
+        <!-- ======= Age Groups ======= -->
+        <div id="age-groups">
+            <div class="row">
+                <div class="col-11">
+                    <label class="form-label ">Age Groups</label>
+                </div>
+                <div class="col-1">
+                    <button id="add-age-group" class="btn btn-sm btn-success" name="btn-add">Add</button>
+                </div>
+                <hr>
+            </div>
+            <div class="row align-middle" th:name="age-row"
+                 th:each="ageGroup, itemStat : *{ageGroups}"
+                 th:data-index="${itemStat.index}">
+                <input type="hidden" th:field="*{ageGroups[__${itemStat.index}__].id}">
+                <div class="col-7">
+                    <div class="form-row">
+                        <input th:field="*{ageGroups[__${itemStat.index}__].name}"
+                               th:errorclass="is-invalid"
+                               type="text" class="form-control"
+                               placeholder="Age Group Name"
+                        >
+                        <div class="invalid-feedback"
+                             th:errors="*{performanceCategories[__${itemStat.index}__].name}">
+                            Error message.
+                        </div>
+                    </div>
+                </div>
+                <div class="col-2">
+                    <div class="form-row">
+                        <input th:field="*{ageGroups[__${itemStat.index}__].minAge}"
+                               th:errorclass="is-invalid"
+                               type="number" class="form-control"
+                               placeholder="Min Age"
+                        >
+                        <div class="invalid-feedback"
+                             th:errors="*{ageGroups[__${itemStat.index}__].minAge}">
+                            Error message.
+                        </div>
+                    </div>
+                </div>
+                <div class="col-2">
+                    <div class="form-row">
+                        <input th:field="*{ageGroups[__${itemStat.index}__].maxAge}"
+                               th:errorclass="is-invalid"
+                               type="number" class="form-control"
+                               placeholder="Max Age"
+                        >
+                        <div class="invalid-feedback"
+                             th:errors="*{ageGroups[__${itemStat.index}__].maxAge}">
+                            Error message.
+                        </div>
+                    </div>
+                </div>
+
+                <input type="hidden" th:field="*{ageGroups[__${itemStat.index}__].deleted}">
+                <div class="col-1">
+                    <a href="#" th:id="|categories${itemStat.index}|"
+                       type="button" class="btn-close" name="remove-group"
+                       th:data-id="${itemStat.index}"></a>
+                </div>
+            </div>
+        </div> <!-- ======= Age Groups ======= -->
+
+
+        <div class="form-row">
+            <label for='jury-members' class="form-label">Jury Members</label>
+            <hr class="mt-0">
+            <select id="jury-members"
+                    class="form-row"
+                    th:field="*{juryMembers}"
+                    th:errorclass="is-invalid"
+                    multiple="multiple"
+                    data-purpose='multiselect'
+                    data-placeholder="-- Please select jury members --">
+                <option th:each="m : ${juryMembersList}"
+                        th:value="${{m.id}}"
+                        th:text="${m.fullName}"
+                >Managers full name
+                </option>
+            </select>
+            <p class="invalid-feedback" th:errors="*{juryMembers}">
+                Name error message.
+            </p>
+        </div>
+        <div class="d-flex justify-content-end align-items-end">
+            <button type="submit" class="btn btn-primary">Save</button>
+        </div>
+    </form>
+</main>
+
+<th:block th:insert="~{/fragments/scripts :: baseScripts}">
+</th:block>
+
+<script src="/js/edition-modify.js"></script>
+</body>
+</html>

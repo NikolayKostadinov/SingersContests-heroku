@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{/fragments/header :: head}"></head>
+<body>
+
+<div th:replace="~{/fragments/header :: topbar}">Contacts</div>
+
+<header th:replace="~{/fragments/header :: header}">Main Navigation</header>
+
+<main id="main" class="container">
+    <div class="row">
+        <div class="offset-md-3 col-md-6 col-8">
+            <h1 class="display-6 text-center " th:text="${editionsModel.name}">Contests list</h1>
+        </div>
+        <div class="col-3 text-end pe-md-4">
+            <a th:href="@{/editions/{contestId}/create(contestId=${editionsModel.id})}"
+               class="btn btn-sm btn-success"><i class="bi bi-file-earmark-plus"></i>
+                <span class="d-none d-md-inline">Create edition</span></a>
+        </div>
+    </div>
+
+    <div class="table-responsive-sm">
+        <table class="table table-hover">
+            <thead>
+            <tr>
+                <th>Begin Date</th>
+                <th>End Date</th>
+                <th>Edition</th>
+                <th>Type</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="edition : ${editionsModel.editions.page}" th:object="${edition}">
+                <td th:text="*{#temporals.format(beginDate, 'dd/MM/yyyy')}">beginDate</td>
+                <td th:text="*{#temporals.format(endDate, 'dd/MM/yyyy')}">beginDate</td>
+                <td th:text="|*{number} edition|">1</td>
+                <td>
+                    <span th:text="*{editionType}"
+                          class="badge rounded-pill"
+                          th:classappend="${edition.editionType.toString() == 'ONLINE' ? 'bg-danger' : 'bg-success'}">online</span>
+                </td>
+
+                <td class="align-middle text-end pe-md-3">
+                    <a th:href="@{/editions/edit/{id}(id=*{id})}" class="btn btn-sm btn-primary">
+                        <i class="bi bi-pencil-square"></i> <span class="d-none d-sm-inline">Edit</span></a>
+                    <form class="d-inline" th:method="delete" th:action="@{/editions/delete/{contestId}/{id}(contestId=*{contestId}, id=*{id})}">
+                        <button type="submit" class="btn btn-sm btn-danger">
+                            <i class="bi bi-x-square"></i> <span class="d-none d-sm-inline">Delete</span>
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <th:block th:insert="~{/fragments/navs :: pager(paged=${editionsModel.editions})}"></th:block>
+</main>
+
+<th:block th:insert="~{/fragments/scripts :: baseScripts}">
+</th:block>
+
+</body>
+</html>

@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{/fragments/header :: head}"></head>
+
+<body>
+
+<div th:replace="~{/fragments/header :: topbar}">Contacts</div>
+
+<header th:replace="~{/fragments/header :: header}">Main Navigation</header>
+
+<main id="main" class="container mb-5" data-aos="zoom-in">
+    <h1 class="display-6 text-center">Register for
+        <th:block th:text="${contestModel.contestName}"></th:block>
+        's
+        <th:block th:text="${contestModel.number}"></th:block>
+        <th:block th:text="${#strings.toLowerCase(contestModel.editionType)}"></th:block>
+        edition
+    </h1>
+    <form th:action="@{/contestants/register/{editionId}(editionId=*{editionId})}" th:method="post"
+          th:object="${contestantModel}"
+          class="main-form mx-auto col-md-10 d-flex flex-column justify-content-center aos-init aos-animate"
+          autoComplete="off">
+        <div class="row">
+            <div class="col-md-10">
+                <div class="row">
+                    <label for="firstName" class="form-label">Name</label>
+                    <div class="col-md-4">
+                        <input id="firstName" th:field="*{firstName}" th:errorclass="is-invalid"
+                               type="text" class="form-control"
+                               placeholder="First"
+                               required>
+                        <div class="invalid-feedback" th:errors="*{firstName}">
+                            Error message.
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <input id="middleName" th:field="*{middleName}" th:errorclass="is-invalid"
+                               type="text" class="form-control"
+                               placeholder="Middle">
+                        <p class="invalid-feedback" th:errors="*{middleName}">
+                            Error message.
+                        </p>
+                    </div>
+
+                    <div class="col-md-4">
+                        <input id="lastName" th:field="*{lastName}" th:errorclass="is-invalid"
+                               type="text" class="form-control"
+                               placeholder="Last"
+                               required>
+                        <p class="invalid-feedback" th:errors="*{lastName}">
+                            Error message.
+                        </p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <label th:for="*{city}" class="form-label">City</label>
+                        <input th:field="*{city}"
+                               th:errorclass="is-invalid"
+                               type="text" class="form-control"
+                               placeholder="City"
+                               required>
+                        <p class="invalid-feedback" th:errors="*{city}">
+                            Error message.
+                        </p>
+                    </div>
+                    <div class="col-md-4">
+                        <label th:for="*{country}" class="form-label">Country</label>
+                        <input th:field="*{country}"
+                               th:errorclass="is-invalid"
+                               type="text" class="form-control"
+                               placeholder="Country"
+                               required>
+                        <p class="invalid-feedback" th:errors="*{country}">
+                            Error message.
+                        </p>
+                    </div>
+                    <div class="col-md-4">
+                        <label th:for="*{institution}" class="form-label">Institution</label>
+                        <input th:field="*{institution}"
+                               th:errorclass="is-invalid"
+                               type="text" class="form-control"
+                               placeholder="Institution"
+                               required>
+                        <p class="invalid-feedback" th:errors="*{institution}">
+                            Error message.
+                        </p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <label th:for="*{birthDay}" class="form-label">Birthday</label>
+                        <input th:field="*{birthDay}"
+                               th:errorclass="is-invalid"
+                               th:data-url="${'/api/age-group/'+ editionId}"
+                               type="date" class="form-control"
+                               required>
+                        <p class="invalid-feedback" th:errors="*{birthDay}">
+                            Error message.
+                        </p>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Age group</label>
+                        <p id="age-group" class="value-presenter"></p>
+                    </div>
+                </div>
+            </div><!--col-md-10-->
+            <div class="col-md-2">
+                <div class="col d-flex justify-content-end pe-1">
+                    <div class="text-center">
+                        <label class="form-label" for="picture-holder">Picture</label>
+                        <img th:src="*{imageUrl}" id="picture-holder" class="picture-holder">
+                        <button type="button" class="btn btn-secondary" data-bs-toggle="modal"
+                                data-bs-target="#uploadPictue">
+                            Upload picture
+                        </button>
+                        <div th:if="${#fields.hasErrors('imageUrl')}"
+                             th:errorclass="is-valid"
+                             th:errors="*{imageUrl}"
+                             class="text-danger d-block">
+                            Style error message
+                        </div>
+                    </div>
+                </div>
+
+                <input type="hidden" th:field="*{imageUrl}">
+            </div>
+        </div><!--row-->
+        <h3>Repertoire</h3>
+        <hr/>
+        <div th:each="song, itemStat : *{songs}" class="row">
+            <input type="hidden" th:field="*{songs[__${itemStat.index}__].category.id}">
+            <input type="hidden" name="song.instrumentalUrl">
+            <h4 class="form-label"
+                th:text="|${itemStat.index + 1}. ${song.category.name}|">Category</h4>
+            <input type="hidden" th:field="*{songs[__${itemStat.index}__].category.name}">
+            <div class="row">
+                <div class="col-md-4">
+                    <label th:for="*{songs[__${itemStat.index}__].name}">Name</label>
+                    <input type="text"
+                           th:field="*{songs[__${itemStat.index}__].name}"
+                           th:errorclass="is-invalid"
+                           class="form-control"
+                           required>
+                    <p class="invalid-feedback" th:errors="*{songs[__${itemStat.index}__].name}">
+                        Error message.
+                    </p>
+                    <input type="hidden"
+                           th:field="*{songs[__${itemStat.index}__].instrumentalUrl}"
+                           th:errorclass="is-invalid"
+                           th:type="hidden">
+                    <p class="invalid-feedback" th:errors="*{songs[__${itemStat.index}__].instrumentalUrl}">
+                        Error message.
+                    </p>
+                </div>
+                <div class="col-md-1">
+                    <label>&nbsp;</label>
+                    <button type="button" class="btn btn-sm btn-outline-success"
+                            data-bs-toggle="modal"
+                            th:data-for="${'songs'+ itemStat.index + '.instrumentalUrl'}"
+                            th:data-display="${'song-name-'+ itemStat.index }"
+                            th:data-duration="${'song-duration-'+ itemStat.index }"
+                            th:data-durationInSeconds="${'songs' + itemStat.index +'.duration'}"
+                            data-bs-target="#uploadInstrumental"
+                            role="instrumental-upload">Upload
+                    </button>
+                </div>
+                <div class="col-md-6">
+                    <label th:for="'song-name-'+${itemStat.index}">Uploaded File Name</label>
+                    <input type="text" th:id="'song-name-'+${itemStat.index}" class="form-control border-0"
+                           disabled="disabled">
+                </div>
+                <div class="col-md-1">
+                    <label th:for="*{songs[__${itemStat.index}__].duration}">Duration</label>
+                    <input type="text" class="form-control" th:id="${'song-duration-'+ itemStat.index }"
+                           disabled="disabled">
+                    <input th:field="*{songs[__${itemStat.index}__].duration}"
+                           th:errorclass="is-invalid"
+                           class="form-control"
+                           type="hidden"
+                           required>
+                    <p class="invalid-feedback" th:errors="*{songs[__${itemStat.index}__].duration}">
+                        Error message.
+                    </p>
+                    <input type="hidden"
+                           th:field="*{songs[__${itemStat.index}__].instrumentalUrl}"
+                           th:errorclass="is-invalid"
+                           th:type="hidden">
+                    <p class="invalid-feedback" th:errors="*{songs[__${itemStat.index}__].instrumentalUrl}">
+                        Error message.
+                    </p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    <label th:for="*{songs[__${itemStat.index}__].composerFullName}">Composer</label>
+                    <input th:field="*{songs[__${itemStat.index}__].composerFullName}"
+                           class="form-control"
+                           th:errorclass="is-invalid"
+                           required>
+                    <p class="invalid-feedback" th:errors="*{songs[__${itemStat.index}__].composerFullName}">
+                        Error message.
+                    </p>
+                </div>
+                <div class="col-md-4">
+                    <label th:for="*{songs[__${itemStat.index}__].arrangerFullName}">Arranger</label>
+                    <input th:field="*{songs[__${itemStat.index}__].arrangerFullName}"
+                           class="form-control"
+                           th:errorclass="is-invalid"
+                           required>
+                    <p class="invalid-feedback" th:errors="*{songs[__${itemStat.index}__].arrangerFullName}">
+                        Error message.
+                    </p>
+                </div>
+                <div class="col-md-4">
+                    <label th:for="*{songs[__${itemStat.index}__].lyricistFullName}">Lyricist</label>
+                    <input th:field="*{songs[__${itemStat.index}__].lyricistFullName}"
+                           th:errorclass="is-invalid"
+                           class="form-control"
+                           required>
+                    <p class="invalid-feedback" th:errors="*{songs[__${itemStat.index}__].lyricistFullName}">
+                        Error message.
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="d-flex justify-content-end align-items-end">
+            <input type="submit" class="btn btn-primary" value="Register">
+        </div>
+    </form>
+</main>
+<th:block
+        th:replace="~{/fragments/modal :: upload-modal('uploadPictue','picture-upload','Choose picture to upload',@{/api/file/upload})}"></th:block>
+<th:block
+        th:replace="~{/fragments/modal :: upload-modal('uploadInstrumental','instrumental-upload', 'Choose instrumental to upload', @{/api/file/upload})}"></th:block>
+<th:block th:replace="~{/fragments/modal :: error-modal}"></th:block>
+<th:block th:insert="~{/fragments/scripts :: baseScripts}"></th:block>
+<script th:src="@{/js/upload-picture.js}"></script>
+<script th:src="@{/js/upload-instrumental.js}"></script>
+<script th:src="@{/js/age-group.js}"></script>
+</body>
+</html>
+songs0.duration
+songs1.duration
