@@ -25,14 +25,11 @@ import java.util.List;
 @Controller
 @RequestMapping("/administration/jury")
 public class AdminJuryController extends BaseController {
-    private final JuryMemberService juryMemberService;
     private final UserService userService;
 
     private final ModelMapper mapper;
 
-    public AdminJuryController(JuryMemberService juryMemberService,
-                               UserService userService, ModelMapper mapper) {
-        this.juryMemberService = juryMemberService;
+    public AdminJuryController(UserService userService, ModelMapper mapper) {
         this.userService = userService;
         this.mapper = mapper;
     }
@@ -90,7 +87,7 @@ public class AdminJuryController extends BaseController {
         setFormTitle("Singers Contests - Edit Jury details", model);
         model.addAttribute("edit", "active");
         addJuryToEdit(model);
-        return "/administration/edit-jury-details";
+        return "administration/edit-jury-details";
     }
 
     @PostMapping("/edit")
@@ -108,7 +105,7 @@ public class AdminJuryController extends BaseController {
         return "redirect:/administration/jury/edit";
     }
 
-    private void addJuryToEdit(Model model){
+    private void addJuryToEdit(Model model) {
         if (!model.containsAttribute("juryMembers")) {
             model.addAttribute("juryMembers", getJuryMembers());
         }
