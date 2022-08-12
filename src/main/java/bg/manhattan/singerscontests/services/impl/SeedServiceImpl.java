@@ -215,7 +215,7 @@ public class SeedServiceImpl implements SeedService {
         List<JuryMember> juryMembers = this.juryMemberRepository.findAll();
         List<Edition> editions = new ArrayList<>();
         contests.forEach(contest -> {
-            for (int i = 0; i < 4; i++) {
+            for (int i = 0; i < 5; i++) {
                 Edition edition = new Edition()
                         .setEditionType(i % 2 == 0 ? EditionType.ATTENDING : EditionType.ONLINE)
                         .setNumber(i + 1)
@@ -268,14 +268,15 @@ public class SeedServiceImpl implements SeedService {
                         "Fifteen tulips",
                         "The road to the stars",
                         "Artship Festival Pomorie",
-                        "Art Stars",
-                        "Coast Happiness",
-                        "Abanico",
-                        "Sofia Grandprix",
-                        "Tallents Of Tomorrow",
-                        "Bravo festival",
-                        "Slavic bazaar in Vitebsk",
-                        "Song pallet")
+                        "Art Stars")
+                        //,
+//                        "Coast Happiness",
+//                        "Abanico",
+//                        "Sofia Grandprix",
+//                        "Tallents Of Tomorrow",
+//                        "Bravo festival",
+//                        "Slavic bazaar in Vitebsk",
+//                        "Song pallet")
                 .forEach(contestName ->
                         contests.add(new Contest()
                                 .setName(contestName)
@@ -450,7 +451,7 @@ public class SeedServiceImpl implements SeedService {
         edition.setBeginOfSubscriptionDate(today.minusDays(3).toLocalDate());
         edition.setEndOfSubscriptionDate(today.minusDays(2).toLocalDate());
         edition.setBeginDate(today.minusDays(1).toLocalDate());
-        edition.setEndDate(today.toLocalDate());
+        edition.setEndDate(today.toLocalDate().plusDays(1));
     }
 
     private BinaryOperator<BigDecimal> getBigDecimalBinaryIncrementOperator() {
