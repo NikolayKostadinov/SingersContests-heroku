@@ -1,0 +1,12 @@
+1. cd
+2. heroku login
+3. heroku create
+4. git remote -v
+5. heroku git:remote -a <new app>
+6. heroku addons:create heroku-postgresql
+7. git push heroku master
+9. heroku logs --tail
+
+reset db: 
+	heroku pg:reset DATABASE_URL
+
