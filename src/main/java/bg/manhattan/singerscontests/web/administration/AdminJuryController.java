@@ -6,7 +6,6 @@ import bg.manhattan.singerscontests.model.enums.UserRoleEnum;
 import bg.manhattan.singerscontests.model.service.JuryMemberServiceModel;
 import bg.manhattan.singerscontests.model.view.JuryDemoteViewModel;
 import bg.manhattan.singerscontests.model.view.UserSelectViewModel;
-import bg.manhattan.singerscontests.services.JuryMemberService;
 import bg.manhattan.singerscontests.services.UserService;
 import bg.manhattan.singerscontests.web.BaseController;
 import org.modelmapper.ModelMapper;
@@ -25,14 +24,11 @@ import java.util.List;
 @Controller
 @RequestMapping("/administration/jury")
 public class AdminJuryController extends BaseController {
-    private final JuryMemberService juryMemberService;
     private final UserService userService;
 
     private final ModelMapper mapper;
 
-    public AdminJuryController(JuryMemberService juryMemberService,
-                               UserService userService, ModelMapper mapper) {
-        this.juryMemberService = juryMemberService;
+    public AdminJuryController(UserService userService, ModelMapper mapper) {
         this.userService = userService;
         this.mapper = mapper;
     }
@@ -90,7 +86,7 @@ public class AdminJuryController extends BaseController {
         setFormTitle("Singers Contests - Edit Jury details", model);
         model.addAttribute("edit", "active");
         addJuryToEdit(model);
-        return "/administration/edit-jury-details";
+        return "administration/edit-jury-details";
     }
 
     @PostMapping("/edit")
@@ -108,7 +104,7 @@ public class AdminJuryController extends BaseController {
         return "redirect:/administration/jury/edit";
     }
 
-    private void addJuryToEdit(Model model){
+    private void addJuryToEdit(Model model) {
         if (!model.containsAttribute("juryMembers")) {
             model.addAttribute("juryMembers", getJuryMembers());
         }
@@ -130,20 +126,17 @@ public class AdminJuryController extends BaseController {
     }
 
     private List<UserSelectViewModel> getPotentialJuryMembers() {
-        List<UserSelectViewModel> potentialJuryMembers =
-                userService.getUserNotInRole(UserRoleEnum.JURY_MEMBER)
-                        .stream()
-                        .map(u -> this.mapper.map(u, UserSelectViewModel.class))
-                        .toList();
-        return potentialJuryMembers;
+        return userService.getUserNotInRole(UserRoleEnum.JURY_MEMBER)
+                .stream()
+                .map(u -> this.mapper.map(u, UserSelectViewModel.class))
+                .toList();
     }
 
     private List<UserSelectViewModel> getJuryMembers() {
-        List<UserSelectViewModel> juryMembers = this.userService.getUsersByRole(UserRoleEnum.JURY_MEMBER)
+        return this.userService.getUsersByRole(UserRoleEnum.JURY_MEMBER)
                 .stream()
                 .map(user -> this.mapper.map(user, UserSelectViewModel.class))
                 .toList();
-        return juryMembers;
     }
 
     @ModelAttribute("juryModel")
